@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: PHP 8.2 integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up PHP
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, sqlite3, mbstring, fileinfo, dom, xml, gd
+          coverage: none
+          tools: composer:v2
+      - name: Validate dependency manifest
+        run: composer validate --strict --no-check-publish
+      - name: Install locked dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --no-progress
+      - name: Verify fresh setup
+        run: php scripts/setup.php
+      - name: Run isolated integration checks
+        run: composer test

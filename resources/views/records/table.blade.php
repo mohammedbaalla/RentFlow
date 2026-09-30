@@ -1,0 +1,5 @@
+<?php $tableMeta=config("resources.$tableType"); ?>
+<div class="table-scroll"><table><thead><tr>@foreach($tableMeta['columns'] as $column)<th>{{ $tableMeta['fields'][$column]['label']??'Durum' }}</th>@endforeach<th><span class="sr-only">Aç</span></th></tr></thead><tbody>
+@forelse($tableRows as $row)<tr>@foreach($tableMeta['columns'] as $column)<td>@if($column==='status')<span class="badge {{ $row->status }}">{{ \App\Support\Catalog::status($row->status) }}</span>@elseif($loop->first)<a class="record-link" href="/records/{{ $tableType }}/{{ $row->id }}">{{ \App\Support\Catalog::value($tableType,$column,$row) }}</a>@else{{ \App\Support\Catalog::value($tableType,$column,$row) }}@endif</td>@endforeach<td><a class="row-open" href="/records/{{ $tableType }}/{{ $row->id }}" aria-label="Kaydı aç">↗</a></td></tr>
+@empty<tr><td colspan="{{ count($tableMeta['columns'])+1 }}"><div class="empty"><span>◇</span><h3>Henüz kayıt yok</h3><p>Yeni bir kayıt ekleyin veya arama filtrenizi değiştirin.</p></div></td></tr>@endforelse
+</tbody></table></div>
